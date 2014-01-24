@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, AuditoriaPresencialMovilActivity!</string>
+    <string name="app_name">Auditoria Presencial Movil</string>
+	<string name="query">Consulta </string>
+    <string name="url">URL:</string>
+    <string name="name">Auditoria Presencial Móvil</string>
+    <string name="inicio">Inicio Sesión</string>
+    <string name="menu">Menú</string>
+    <string name="configurar">Configuración URL</string>
+    <string name="resultado">Sus Datos</string>
+    <string name="almacenarlp">Recordar Usuario</string>
+        
+</resources>

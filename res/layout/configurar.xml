@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Fondo" >
+    
+	<LinearLayout
+	        android:id="@+id/linearLayout1"
+	        style="@style/Encabezado"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal">
+	</LinearLayout>    
+
+    <TextView
+        android:id="@+id/tituloConf"
+        style="@style/Titulo"
+        android:layout_height="150dp"
+        android:text="@string/configurar"/>
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout2"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+    
+        <EditText
+            android:id="@+id/urlusuer"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="38dp"
+            android:layout_marginTop="17dp"
+            android:layout_toRightOf="@+id/url"
+            android:layout_weight="0.19"
+            android:cursorVisible="true"
+            android:gravity="right"
+            android:inputType="text"
+            android:width="100dp">
+        </EditText>
+
+        <TextView
+            android:id="@+id/url"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/urlusuer"
+            android:layout_alignBottom="@+id/urlusuer"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="19dp"
+            android:gravity="left"
+            android:padding="5dp"
+            android:text="@string/url"
+            android:textColor="#000000"
+            android:textSize="20dp"
+            android:width="80dp"/>
+        
+        <Button
+            android:id="@+id/btguardar"
+            android:layout_width="85dp"
+            android:layout_height="80dp"
+            android:layout_alignLeft="@+id/url"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="39dp"
+            android:background="@drawable/qd_guardar"
+            android:width="80sp"/>
+        
+   </RelativeLayout>	
+    
+</LinearLayout>    

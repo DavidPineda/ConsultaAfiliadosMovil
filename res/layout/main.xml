@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Fondo" >
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        style="@style/Encabezado"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+    </LinearLayout>
+
+    
+   <TextView
+       android:id="@+id/titulo"
+       style="@style/Titulo"
+       android:layout_height="122dp"
+       android:text="@string/inicio" />
+
+  <RelativeLayout
+      android:id="@+id/relativeLayout1"
+      android:layout_width="fill_parent"
+      android:layout_height="262dp" >
+
+      <Button
+          android:id="@+id/btconectar"
+          android:layout_width="85dp"
+          android:layout_height="80dp"
+          android:layout_alignParentBottom="true"
+          android:background="@drawable/qd_boton"
+          android:onClick="validar_Login"
+          android:width="80sp" android:layout_marginBottom="39dp"/>
+
+      <TextView
+          android:id="@+id/user"
+          style="@style/SubTitulos"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_alignParentLeft="true"
+          android:layout_marginLeft="14dp"
+          android:layout_marginTop="30dp"
+          android:text="Usuario:" />
+
+      <EditText
+          android:id="@+id/usuario"
+          android:layout_width="120dp"
+          android:layout_height="wrap_content"
+          android:layout_alignBaseline="@+id/user"
+          android:layout_alignBottom="@+id/user"
+          android:layout_marginLeft="45dp"
+          android:layout_toRightOf="@+id/btconectar"
+          android:layout_weight="1"
+          android:cursorVisible="true"
+          android:gravity="right"
+          android:inputType="text" />
+
+      <EditText
+          android:id="@+id/contrasena"
+          android:layout_width="120dp"
+          android:layout_height="wrap_content"
+          android:layout_alignLeft="@+id/usuario"
+          android:layout_below="@+id/usuario"
+          android:layout_marginTop="19dp"
+          android:layout_weight="1"
+          android:cursorVisible="true"
+          android:gravity="right"
+          android:inputType="textPassword" >
+
+          <requestFocus />
+      </EditText>
+
+      <TextView
+          android:id="@+id/password"
+          style="@style/SubTitulos"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_alignBaseline="@+id/contrasena"
+          android:layout_alignBottom="@+id/contrasena"
+          android:layout_alignLeft="@+id/user"
+          android:text="Contraseña:" />
+
+      <CheckBox
+          android:id="@+id/RecoardarLogin"
+          style="@style/SubTitulos"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_alignBaseline="@+id/btconectar"
+          android:layout_alignBottom="@+id/btconectar"
+          android:layout_toRightOf="@+id/password"
+          android:text="@string/almacenarlp"
+          android:textSize="12px"/>
+
+  </RelativeLayout>
+
+</LinearLayout>
