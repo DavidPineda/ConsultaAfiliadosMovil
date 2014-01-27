@@ -21,7 +21,7 @@
         android:id="@+id/relativeLayout1"
         android:layout_width="fill_parent"
         android:layout_height="354dp" >
-
+
         <TextView
             android:id="@+id/code"
             style="@style/SubTitulos"
@@ -53,7 +53,7 @@
             android:background="@drawable/qd_buscar"
             android:onClick="ConsultaAfiliado"
             android:width="80sp" />
-
+
         <TextView
             android:id="@+id/document"
             style="@style/SubTitulos"
@@ -72,7 +72,7 @@
             android:background="@android:drawable/editbox_background"
             android:inputType="text"
             android:width="100sp" />
-
+
         <Button
             android:id="@+id/btdocumento"
             android:layout_width="20dp"

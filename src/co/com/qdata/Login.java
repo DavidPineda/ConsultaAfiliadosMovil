@@ -16,6 +16,7 @@ import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapPrimitive;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
+import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -27,15 +28,31 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import co.com.qdata.Persistencia.DBManaged;
+import co.com.qdata.usuario.Usuario;
 
-public class Login extends Activity {
+public class Login extends Activity{
+	
+	private static final String TABLA_1 = "create table if not exists "
+									  + "user_file "
+								  	  + "("
+								  	  + "ID INT PRIMARY KEY , "
+								  	  + "USER TEXT "
+								  	  + "PASSWORD TEXT"
+								  	  + ")";	
+	
+	private static final String DB_NAME = "QDATA_MOVIL";
+	private static final int VERSION = 1;
 
 	private TextView usuario;
 	private TextView contrasena;
 	private CheckBox almacenarUser;
+	private Button btn_consultar;
 	
 	/**
 	 * @author Irma Fernanda Alayon
@@ -49,7 +66,15 @@ public class Login extends Activity {
 		usuario = (TextView) findViewById(R.id.usuario);
 		contrasena = (TextView) findViewById(R.id.contrasena);
 		almacenarUser = (CheckBox) findViewById(R.id.RecoardarLogin);		
-
+		btn_consultar = (Button) findViewById(R.id.btconectar);
+		btn_consultar.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				validar_Login();
+			}
+		});
+		
 	}
 
 	@Override
@@ -83,27 +108,43 @@ public class Login extends Activity {
 		String url = "";
 		
 		try{
-			SQLiteDatabase db = SQLiteDatabase.openDatabase("QDATA_MOVIL", null, SQLiteDatabase.OPEN_READONLY);
+			SQLiteDatabase db = SQLiteDatabase.openDatabase("data/data/integra.auditoriapre.movil/databases/QDATA_MOVIL", null, SQLiteDatabase.OPEN_READONLY);
 			url = DBManaged.recuperarURL(db, "select URL from url_file where ID = 1");			
+			if(validarUsuario(usuario.getText().toString()) && validarContrasena(contrasena.getText().toString())) {
+				try{				
+					if (almacenarUser.isChecked()) {
+						almacenarDatos();
+					}
+					llamaServicio(url);
+				}catch(SQLiteException ex){
+					mostrarMensaje("Ocurrio un error al guardar los datos del usuario");
+				}
+			}
 		}catch(SQLiteException ex)
 		{
 			mostrarMensaje("A ocurrido un error al recuperar la URL registrada");
 		}
 	
-		if(validarUsuario(usuario.getText().toString()) && validarContrasena(contrasena.getText().toString())) {
-			try{				
-				if (almacenarUser.isChecked()) {
-					almacenarDatos();
-				}
-				llamaServicio(url);
-			}catch(SQLiteException ex){
-				mostrarMensaje("Ocurrio un error al guardar los datos del usuario");
-			}
-		}
 	}
 
 	private void almacenarDatos() throws SQLiteException {
-		//TODO realizar este metodo
+		Usuario usuario = null;
+		DBManaged db = new DBManaged(getApplicationContext(), DB_NAME, VERSION, TABLA_1);
+		usuario = db.recuperaruSuarioContrasena("SELECT ID, USER, PASSWORD FROM user_file WHERE ID = 1");
+		try
+		{
+		if (!(usuario == null)){
+			db.ejecutarQuery(db.getWritableDatabase(), 
+					"insert into user_file(ID, USER, PASSWORD) values('1','" + this.usuario.toString() + "','" + this.contrasena.toString() + "'");
+		}else{
+			db.ejecutarQuery(db.getWritableDatabase(),
+					"update user_file set USER = '" + this.usuario.toString() + "', PASSWORD = '" + this.contrasena.toString() + "'");
+		}
+		}catch(SQLiteException ex){
+			mostrarMensaje("Se presento un error en la aplicación");
+		}catch (Exception e) {
+			mostrarMensaje("Se presento un error en la aplicación");
+		}
 	}
 
 	private void mostrarMensaje(String mensaje){
@@ -144,37 +185,37 @@ public class Login extends Activity {
 	}
 	
 	private void llamaServicio(String url){
-		
+							
 		String NameSpace = "http://tempuri.org/ConsultaAfiliadosOnLine/Service1";
-		String SoapAction = "http://tempuri.org/ConsultaAfiliadosOnLine/Service1/VerificarLogin";
-		String Method = "VerificarLogin";
+		String SoapAction = "http://tempuri.org/ConsultaAfiliadosOnLine/Service1/Consultar_OnLine";
+		String Method = "Consultar_OnLine";
 		
-		SoapObject request = new SoapObject(NameSpace, Method);
-
-		PropertyInfo UserName = new PropertyInfo();
-		PropertyInfo Password = new PropertyInfo();
-
-		UserName.setName("strUsuario");
-		UserName.setValue(usuario.getText().toString());
-		UserName.setType(String.class);
-
-		Password.setName("strClave");
-		Password.setValue(contrasena.getText().toString());
-		Password.setType(String.class);
-
-		request.addProperty(UserName);
-		request.addProperty(Password);
-
-		SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
-		envelope.dotNet = true;
-		envelope.setOutputSoapObject(request);
-		HttpTransportSE androidHttpTransport = new HttpTransportSE(url);
-
 		try {
+			
+			SoapObject request = new SoapObject(NameSpace, Method);
+
+			PropertyInfo UserName = new PropertyInfo();
+			PropertyInfo Password = new PropertyInfo();
+
+			UserName.setName("strDocumento");
+			UserName.setValue(usuario.getText().toString());
+			UserName.setType(String.class);
+
+			Password.setName("strCodigoInterno");
+			Password.setValue(contrasena.getText().toString());
+			Password.setType(String.class);
+			
+			request.addProperty(UserName);
+			request.addProperty(Password);		
+
+			SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+			envelope.dotNet = true;
+			envelope.setOutputSoapObject(request);
+			HttpTransportSE androidHttpTransport = new HttpTransportSE(url);
 
 			//Se crea la variable de transporte que se encarga de traer la respuesta de el servicio web
 			androidHttpTransport.call(SoapAction, envelope);
-			SoapPrimitive response = (SoapPrimitive) envelope.getResponse();
+			SoapPrimitive response =  (SoapPrimitive) envelope.getResponse();
 			
 			//se valida la respuesta obtenida del servicio web para poder
 			//ingresar a la activity de consulta, llamando a los metodos
@@ -191,9 +232,13 @@ public class Login extends Activity {
 			}
 
 		}
+		catch (XmlPullParserException ex){
+			mostrarMensaje("Error de conversión de datos");
+		}
 		catch (Exception e) {
 			mostrarMensaje("Se preseneto un error al realizar la consulta de afiliado");
-		}		
+		}
+
 	}
 
 	/**
@@ -223,4 +268,5 @@ public class Login extends Activity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
+
 }

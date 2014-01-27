@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import co.com.qdata.usuario.Usuario;
 
 public class DBManaged extends SQLiteOpenHelper {
 
@@ -83,6 +84,28 @@ public class DBManaged extends SQLiteOpenHelper {
     	return url;
     }
     
+    public Usuario recuperaruSuarioContrasena(String sentencia) throws SQLiteException{
+    	SQLiteDatabase db = getReadableDatabase();
+    	String usuario = "", contrasena = "";
+    	int id;
+    	Usuario user = null;
+    	if(!(db == null)){
+    		Cursor c = db.rawQuery(sentencia, null);
+    		if(!(c == null)){
+    			c.moveToFirst();
+    		}
+    		if(c.getCount() > 0){
+    			id = Integer.parseInt(c.getString(0));
+    			usuario = c.getString(1);
+    			contrasena = c.getString(2);
+    			user = new Usuario(id, usuario, contrasena);
+    		}
+    		db.close();
+    		c.close();
+    	}
+    	return user;
+    }
+    
     public static String recuperarURL(SQLiteDatabase db, String sentencia) throws SQLiteException{
     	String url = "";
     	if(!(db == null)){
@@ -97,6 +120,17 @@ public class DBManaged extends SQLiteOpenHelper {
     		c.close();
     	}
     	return url;
+    }
+    
+    public void ejecutarQuery(SQLiteDatabase db, String sentencia) throws Exception, SQLiteException{    	
+    	if(db == null){
+    		throw new Exception("Argumento db es nulo");
+    	}
+    	try{
+    	db.rawQuery(sentencia, null);
+    	}catch(SQLiteException ex){
+    		throw new SQLiteException("Se presento un error al ejecutar el query");
+    	}
     }
    
 }

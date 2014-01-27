@@ -67,7 +67,7 @@ public class Configurar extends Activity implements OnClickListener{
 	
 		String url_value = url.getText().toString();
 			
-		Pattern pat = Pattern.compile("^(http://)([a-zA-Z0-9]+/)+[a-zA-Z-0-9]+(\\.asmx)$");
+		Pattern pat = Pattern.compile("^(http://)([a-zA-Z0-9\\.]+/)+[a-zA-Z-0-9]+(\\.asmx)$");
 		Matcher mat = pat.matcher(url_value);
 
 		if (url_value == "") {
