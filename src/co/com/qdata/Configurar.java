@@ -1,5 +1,5 @@
 /**
- * @nameProject Auditoria Presencial Movil
+ * @nameProject Auditpooria Presencial Movil
  * @nameClass Configurar
  * @author Irma Fernanda Alayon 
  * @version 1.0
@@ -17,6 +17,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,7 +26,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 import co.com.qdata.Persistencia.DBManaged;
 
 public class Configurar extends Activity implements OnClickListener{
@@ -63,65 +63,37 @@ public class Configurar extends Activity implements OnClickListener{
 		return true;
 	}
 
-	/**
-	 * @author Irma Fernanda Alayon
-	 * @date 27/03/2012
-	 * Metodo que identifica la ruta en la cual puede almacenar el archivo que
-	 * se va a crear para almacenar la url, que digite el usuario y crea el
-	 * archivo.
-	 * 
-	 * @param v
-	 */
 	public void AlmacenarURL() {
-
-		
+	
 		String url_value = url.getText().toString();
 			
-		Pattern pat = Pattern.compile("r");
+		Pattern pat = Pattern.compile("^(http://)([a-zA-Z0-9]+/)+[a-zA-Z-0-9]+(\\.asmx)$");
 		Matcher mat = pat.matcher(url_value);
 
 		if (url_value == "") {
-			Toast.makeText(getBaseContext(),
-					"Ingrese la URL",
-					Toast.LENGTH_LONG).show();
+			mostrarMensaje("Ingrese la URL");
 		}else if(!mat.matches()){
-			Toast.makeText(getBaseContext(),
-					"La URL contiene caracteres invalidos",
-					Toast.LENGTH_LONG).show();			
+			mostrarMensaje("la url ingresada no es válida");		
 		}
 		else {
-
-				try {
-					
-					DBManaged database = new DBManaged(getApplicationContext(), DB_NAME, VERSION, TABLA);
-					database.insertarUrl(1, url_value);
-					AlertDialog.Builder builder = new AlertDialog.Builder(this);
-					builder.setMessage(("URL registrada correctamente"))
-							.setCancelable(false)
-							.setNegativeButton("Aceptar",
-									new DialogInterface.OnClickListener() {
-										public void onClick(DialogInterface dialog,
-												int id) {
-											dialog.cancel();
-										}
-									});
-					AlertDialog alert = builder.create();
-					alert.show();					
-
-				} catch (Exception ex) {
-					Toast.makeText(getBaseContext(),
-							"Se hapresentado un error, Favor intente mas tarde",
-							Toast.LENGTH_LONG).show();
-				}	
+			try {
+				
+				DBManaged database = new DBManaged(getApplicationContext(), DB_NAME, VERSION, TABLA);
+				String url_guardada = database.recuperarURL("select URL from url_file where ID = 1");
+				if(url_guardada == ""){
+					database.insertarUrl(1, url_value, "url_file");
+				}
+				else{
+					database.modificarUrl(1, url_value, "url_file");
+				}
+				mostrarMensaje("URL registrada correctamente");				
+			} catch (SQLiteException ex) {
+				mostrarMensaje("Se hapresentado un error, Favor intente mas tarde");
+			}	
 		}
 	}
 
-	/**
-	 * @author Irma Fernanda Alayon Perilla
-	 * @date 27/03/2012
-	 * Mmetodo ue lee el archivo en el cual esta la url de caonexion para validar el Loguin de usuario.
-	 * @param v
-	 */
+	
 	public void leerDatos() {
 		
 		try{
@@ -130,23 +102,10 @@ public class Configurar extends Activity implements OnClickListener{
 			if(!(url_guardada == "")){
 				url.setText(url_guardada);
 			}else{
-				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setMessage(("No se ha ingresado ninguna URL"))
-						.setCancelable(false)
-						.setNegativeButton("Aceptar",
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int id) {
-										dialog.cancel();
-									}
-								});
-				AlertDialog alert = builder.create();
-				alert.show();				
-			}
-		} catch (Exception ex) {
-			Toast.makeText(getBaseContext(),
-					"Se hapresentado un error, Favor intente mas tarde",
-					Toast.LENGTH_LONG).show();
+				mostrarMensaje("No se ha ingresado ninguna URL");
+			} 
+		}catch (SQLiteException ex) {
+				mostrarMensaje("Se hapresentado un error, Favor intente mas tarde");
 		}
 	}
 
@@ -181,5 +140,20 @@ public class Configurar extends Activity implements OnClickListener{
 		if(v.getId() == btn_guardar.getId()){
 			AlmacenarURL();
 		}
+	}
+	
+	private void mostrarMensaje(String mensaje){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage((mensaje))
+				.setCancelable(false)
+				.setNegativeButton("Aceptar",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int id) {
+								dialog.cancel();
+							}
+						});
+		AlertDialog alert = builder.create();
+		alert.show();			
 	}
 }
