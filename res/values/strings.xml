@@ -11,5 +11,7 @@
     <string name="configurar">Configuración URL</string>
     <string name="resultado">Sus Datos</string>
     <string name="almacenarlp">Recordar Usuario</string>
+    <string name="cod_interno">Código Interno:</string>
+    <string name="doc_afiliado">Documento del afiliado:</string>
         
 </resources>

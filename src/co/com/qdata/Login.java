@@ -10,12 +10,8 @@ package co.com.qdata;
 
 import integra.auditoriapre.movil.R;
 
-import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.PropertyInfo;
-import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapPrimitive;
-import org.ksoap2.serialization.SoapSerializationEnvelope;
-import org.ksoap2.transport.HttpTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.Activity;
@@ -34,6 +30,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import co.com.qdata.Persistencia.DBManaged;
+import co.com.qdata.llamaServicio.LlamaServicio;
 import co.com.qdata.usuario.Usuario;
 
 public class Login extends Activity{
@@ -90,7 +87,7 @@ public class Login extends Activity{
 	 * Metodo que activa el traslado de la activity Login a Consulta
 	 */
 	public void aceptar() {
-		Intent intent = new Intent(Login.this, VistaWeb.class);
+		Intent intent = new Intent(Login.this, Consulta.class);
 		startActivity(intent);
 	}
 
@@ -109,17 +106,20 @@ public class Login extends Activity{
 		
 		try{
 			SQLiteDatabase db = SQLiteDatabase.openDatabase("data/data/integra.auditoriapre.movil/databases/QDATA_MOVIL", null, SQLiteDatabase.OPEN_READONLY);
-			url = DBManaged.recuperarURL(db, "select URL from url_file where ID = 1");			
-			if(validarUsuario(usuario.getText().toString()) && validarContrasena(contrasena.getText().toString())) {
-				try{				
-					if (almacenarUser.isChecked()) {
-						almacenarDatos();
+			url = DBManaged.recuperarURL(db, "select URL from url_file where ID = 1");
+			if(!url.equals("")){
+				if(validarUsuario(usuario.getText().toString()) && validarContrasena(contrasena.getText().toString())) {
+					try{				
+						if (almacenarUser.isChecked()) {
+							almacenarDatos();
+						}
+						llamaServicio(url);
+					}catch(SQLiteException ex){
+						mostrarMensaje("Ocurrio un error al guardar los datos del usuario");
 					}
-					llamaServicio(url);
-				}catch(SQLiteException ex){
-					mostrarMensaje("Ocurrio un error al guardar los datos del usuario");
 				}
-			}
+			}else
+				mostrarMensaje("Por favor configure la URL del servico Web");
 		}catch(SQLiteException ex)
 		{
 			mostrarMensaje("A ocurrido un error al recuperar la URL registrada");
@@ -187,58 +187,72 @@ public class Login extends Activity{
 	private void llamaServicio(String url){
 							
 		String NameSpace = "http://tempuri.org/ConsultaAfiliadosOnLine/Service1";
-		String SoapAction = "http://tempuri.org/ConsultaAfiliadosOnLine/Service1/Consultar_OnLine";
-		String Method = "Consultar_OnLine";
+		String SoapAction = "http://tempuri.org/ConsultaAfiliadosOnLine/Service1/consultarUsuarioMovil";
+		String Method = "consultarUsuarioMovil";
 		
 		try {
 			
-			SoapObject request = new SoapObject(NameSpace, Method);
-
+			PropertyInfo[] propiedades = new PropertyInfo[2];
 			PropertyInfo UserName = new PropertyInfo();
 			PropertyInfo Password = new PropertyInfo();
 
-			UserName.setName("strDocumento");
+			UserName.setName("nombre_usuario");
 			UserName.setValue(usuario.getText().toString());
 			UserName.setType(String.class);
-
-			Password.setName("strCodigoInterno");
+			propiedades[0] = UserName;
+			Password.setName("contrasena");
 			Password.setValue(contrasena.getText().toString());
 			Password.setType(String.class);
+			propiedades[1] = Password;
+			LlamaServicio servicio = new LlamaServicio(NameSpace, SoapAction, Method, url);
+			SoapPrimitive response = servicio.llamaServicioPrimitive(propiedades);
 			
-			request.addProperty(UserName);
-			request.addProperty(Password);		
-
-			SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
-			envelope.dotNet = true;
-			envelope.setOutputSoapObject(request);
-			HttpTransportSE androidHttpTransport = new HttpTransportSE(url);
-
-			//Se crea la variable de transporte que se encarga de traer la respuesta de el servicio web
-			androidHttpTransport.call(SoapAction, envelope);
-			SoapPrimitive response =  (SoapPrimitive) envelope.getResponse();
-			
-			//se valida la respuesta obtenida del servicio web para poder
-			//ingresar a la activity de consulta, llamando a los metodos
-			//aceptar(), si los datos del usuario son validos; y cancelar()
-			//si los datos no son validos.
-			if (response.toString().equals("0-USUARIO NO EXISTE")) {
-				mostrarMensaje("Nombre de usuario incorrecto");
-				cancelar();
-			}else if (response.toString().equals("0-CLAVE INVALIDA")) {
-				mostrarMensaje("Password de usuario incorrecto");
-				cancelar();
-			}else if (response.toString().equals("1-OK")) {
-				aceptar();
-			}
+			concederDenegarAcceso(Integer.parseInt(response.toString()));
 
 		}
 		catch (XmlPullParserException ex){
 			mostrarMensaje("Error de conversión de datos");
 		}
-		catch (Exception e) {
+		catch (Exception ex) {
 			mostrarMensaje("Se preseneto un error al realizar la consulta de afiliado");
 		}
 
+	}
+	
+	private void concederDenegarAcceso(int valor){
+		switch(valor){
+		case 0:
+			mostrarMensaje("Usuario y password incorrectos");
+			cancelar();
+			break;
+		case 1:
+			aceptar();
+			break;
+		case 2:
+			mostrarMensaje("Password de usuario incorrecto");
+			cancelar();
+			break;
+		case 3:
+			mostrarMensaje("Nombre de usuario incorrecto");
+			cancelar();
+			break;
+		case 7:
+			mostrarMensaje("Se produjo un error, Favor intente más tarde");
+			cancelar();
+			break;
+		case 8:
+			mostrarMensaje("Se produjo un error, Favor intente más tarde");
+			cancelar();
+			break;
+		case 9: 
+			mostrarMensaje("Se produjo un error, Favor intente más tarde");
+			cancelar();				
+			break;
+			default:
+				mostrarMensaje("Se produjo un error, Favor intente más tarde");
+				cancelar();		
+				break;
+		}
 	}
 
 	/**

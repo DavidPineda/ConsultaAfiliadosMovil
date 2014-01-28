@@ -6,84 +6,78 @@
         android:id="@+id/linearLayout1"
         style="@style/Encabezado"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-
+        android:orientation="horizontal">
     </LinearLayout>
     
-
     <TextView
         android:id="@+id/titulocon"
         style="@style/Titulo"
         android:layout_height="152dp"
-        android:text="@string/query" />
-
+        android:text="@string/query"/>
+     
     <RelativeLayout
         android:id="@+id/relativeLayout1"
         android:layout_width="fill_parent"
-        android:layout_height="354dp" >
-
+        android:layout_height="354dp">
+        
         <TextView
             android:id="@+id/code"
             style="@style/SubTitulos"
-            android:layout_alignBottom="@+id/indato"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_marginLeft="16dp"
-            android:text="Codigo Interno: " />
-
+            android:text="@string/cod_interno"/>
+        
         <EditText
-            android:id="@+id/indato"
+            android:id="@+id/contrato_afil"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/code"
-            android:layout_weight="1"
             android:background="@android:drawable/editbox_background"
-            android:inputType="numberSigned"
+            android:inputType="number"
             android:width="110sp" />
-
+        
         <Button
             android:id="@+id/btcodigo"
             android:layout_width="20dp"
             android:layout_height="14dp"
-            android:layout_alignBottom="@+id/indato"
+            android:layout_alignBottom="@+id/contrato_afil"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:layout_marginRight="14dp"
             android:background="@drawable/qd_buscar"
-            android:onClick="ConsultaAfiliado"
-            android:width="80sp" />
-
+            android:width="80sp"/>
+        
         <TextView
             android:id="@+id/document"
             style="@style/SubTitulos"
             android:layout_alignLeft="@+id/code"
-            android:layout_below="@+id/indato"
+            android:layout_below="@+id/contrato_afil"
             android:layout_marginTop="40dp"
-            android:text="Documento: " />
-
+            android:text="@string/doc_afiliado"/>
+        
         <EditText
-            android:id="@+id/indoc"
+            android:id="@+id/numero_doc"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/document"
             android:layout_alignBottom="@+id/document"
-            android:layout_alignLeft="@+id/indato"
+            android:layout_alignLeft="@+id/contrato_afil"
             android:background="@android:drawable/editbox_background"
-            android:inputType="text"
-            android:width="100sp" />
-
+            android:inputType="number"
+            android:width="100sp"/>
+        
         <Button
             android:id="@+id/btdocumento"
             android:layout_width="20dp"
             android:layout_height="14dp"
-            android:layout_alignBottom="@+id/indoc"
+            android:layout_alignBottom="@+id/numero_doc"
             android:layout_alignLeft="@+id/btcodigo"
-            android:layout_alignTop="@+id/indoc"
+            android:layout_alignTop="@+id/numero_doc"
             android:background="@drawable/qd_buscar"
-            android:onClick="ConsultaAfiliado"
-            android:width="80sp" />
-
+            android:width="80sp"/>
+        
     </RelativeLayout>
-
+  
 </LinearLayout>
