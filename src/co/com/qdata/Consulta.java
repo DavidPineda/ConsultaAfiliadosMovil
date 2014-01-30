@@ -8,8 +8,6 @@
 
 package co.com.qdata;
 
-import integra.auditoriapre.movil.R;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,6 +21,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -31,19 +30,22 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import co.com.qdata.Persistencia.DBManaged;
 import co.com.qdata.llamaServicio.LlamaServicio;
 import co.com.qdata.usuario.UsuarioConsultado;
 
+import com.co.qdata.R;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 
 public class Consulta extends Activity implements OnClickListener{
 
 	private TextView codInterno, docAfiliado;
-	private Button btnCodInterno, btnNumDocumento; 
+	private Button btn_consultar;
 	/**
 	 * Metodo que activa la ventana de la actidad (clase).
 	 * 
@@ -53,15 +55,14 @@ public class Consulta extends Activity implements OnClickListener{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.consulta);
-		
 		codInterno = (TextView) findViewById(R.id.contrato_afil);
 		docAfiliado = (TextView) findViewById(R.id.numero_doc);
-		btnCodInterno = (Button) findViewById(R.id.btcodigo);
-		btnNumDocumento = (Button) findViewById(R.id.btdocumento);
-		btnCodInterno.setOnClickListener(this);
-		btnNumDocumento.setOnClickListener(this);
-		
+		btn_consultar = (Button) findViewById(R.id.btn_consultar);
+		btn_consultar.setOnClickListener(this);
 	}
 	
 	@Override
@@ -82,16 +83,18 @@ public class Consulta extends Activity implements OnClickListener{
 	 */
 	public void ConsultaAfiliado(View v) {
 		
-		if(v.getId() == btnCodInterno.getId()){
+		if(!this.codInterno.getText().toString().equals("")){
 			if(!validarCodinterno())
 				mostrarMensaje("Código Interno incorrecto");
 			else
 				llamarServicio(this.codInterno.getText().toString(), "");
-		}else if(v.getId() == btnNumDocumento.getId()){
+		}else if(!this.docAfiliado.getText().toString().equals("")){
 			if(!validarNumeroDoc())
 				mostrarMensaje("Número de documento incorrecto");
 			else 
 				llamarServicio("", this.docAfiliado.getText().toString());
+		}else{
+			mostrarMensaje("Ingrese Código o Número de documento, para realizar la consulta");
 		}
 	}
 		
@@ -107,34 +110,43 @@ public class Consulta extends Activity implements OnClickListener{
 		barraProgreso();
 		
 		try{
-
 			SQLiteDatabase db = SQLiteDatabase.openDatabase("data/data/integra.auditoriapre.movil/databases/QDATA_MOVIL", null, SQLiteDatabase.OPEN_READONLY);
-			url = DBManaged.recuperarURL(db, "select URL from url_file where ID = 1");
-			if(!url.equals("")){
-				if(!codInterno.equals("")){
-					propiedad.setName("codigo_interno");
-					propiedad.setValue(codInterno);
-					propiedad.setType(String.class);
-				}else{
-					propiedad.setName("numero_documento");
-					propiedad.setValue(numAfiliado);
-					propiedad.setType(String.class);					
-				}
-				propiedades[0] = propiedad;
-				LlamaServicio servicio = new LlamaServicio(NameSpace, SoapAction, Method, url);
-				SoapPrimitive response = servicio.llamaServicioPrimitive(propiedades);
-				if(!(response == null) && !response.toString().equals("")){
-					if(Integer.parseInt(response.toString()) == 1 || Integer.parseInt(response.toString()) == 0){
-						mostrarMensaje("Ocurrio un error en el Web Service, Favor intentar mas tarde");
+			if(db != null){
+				url = DBManaged.recuperarURL(db, "select URL from url_file where ID = 1");
+				if(!url.equals("")){
+					if(!codInterno.equals("")){
+						propiedad.setName("codigo_interno");
+						propiedad.setValue(codInterno);
+						propiedad.setType(String.class);
 					}else{
-						mostrarDatos(response);
+						propiedad.setName("numero_documento");
+						propiedad.setValue(numAfiliado);
+						propiedad.setType(String.class);					
+					}
+					propiedades[0] = propiedad;
+					LlamaServicio servicio = new LlamaServicio(NameSpace, SoapAction, Method, url);
+					SoapPrimitive response = servicio.llamaServicioPrimitive(propiedades);
+					if(!(response == null) && !response.toString().equals("")){
+						if(response.toString().equals("1") || response.toString().equals("0")){
+							mostrarMensaje("Ocurrio un error en el Web Service, Favor intentar mas tarde");
+						}else if(response.toString().equals("0")){
+							mostrarMensaje("No se encontro el afiliado en la base de datos");
+						}else{
+							mostrarDatos(response);
+						}
 					}
 				}
-			}
-			else
+				else{
+					mostrarMensaje("Por favor configure la URL del servico Web");
+				}
+			}else{
 				mostrarMensaje("Por favor configure la URL del servico Web");
+			}
 		}catch(JSONException ex){
 			mostrarMensaje("Se preseneto un error al realizar la consulta de afiliado");
+		}
+		catch(SQLiteException ex){
+			mostrarMensaje("Por favor configure la URL del servico Web");
 		}
 		catch (Exception ex) {
 			mostrarMensaje("Se preseneto un error al realizar la consulta de afiliado");

@@ -2,7 +2,7 @@
 <resources>
 
     <string name="hello">Hello World, AuditoriaPresencialMovilActivity!</string>
-    <string name="app_name">Auditoria Presencial Movil</string>
+    <string name="app_name">Consulta Afiliados Movil</string>
 	<string name="query">Consulta </string>
     <string name="url">URL:</string>
     <string name="name">Auditoria Presencial Móvil</string>
@@ -13,5 +13,6 @@
     <string name="almacenarlp">Recordar Usuario</string>
     <string name="cod_interno">Código Interno:</string>
     <string name="doc_afiliado">Documento del afiliado:</string>
-        
+    <string name="consulta">Consultar</string>
+    
 </resources>

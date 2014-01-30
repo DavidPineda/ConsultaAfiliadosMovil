@@ -8,7 +8,7 @@
 
 package co.com.qdata;
 
-import integra.auditoriapre.movil.R;
+import java.net.SocketException;
 
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapPrimitive;
@@ -18,6 +18,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteCantOpenDatabaseException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
@@ -26,6 +27,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -33,14 +36,16 @@ import co.com.qdata.Persistencia.DBManaged;
 import co.com.qdata.llamaServicio.LlamaServicio;
 import co.com.qdata.usuario.Usuario;
 
+import com.co.qdata.R;
+
 public class Login extends Activity{
 	
 	private static final String TABLA_1 = "create table if not exists "
 									  + "user_file "
 								  	  + "("
-								  	  + "ID INT PRIMARY KEY , "
-								  	  + "USER TEXT "
-								  	  + "PASSWORD TEXT"
+								  	  + "ID INT PRIMARY KEY, "
+								  	  + "USER TEXT, "
+								  	  + "PASSWORD TEXT "
 								  	  + ")";	
 	
 	private static final String DB_NAME = "QDATA_MOVIL";
@@ -59,6 +64,9 @@ public class Login extends Activity{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.main);		
 		usuario = (TextView) findViewById(R.id.usuario);
 		contrasena = (TextView) findViewById(R.id.contrasena);
@@ -72,6 +80,7 @@ public class Login extends Activity{
 			}
 		});
 		
+		leerDatosGuardados();
 	}
 
 	@Override
@@ -103,9 +112,9 @@ public class Login extends Activity{
 
 	public void validar_Login() {
 		String url = "";
-		
+		SQLiteDatabase db = null;
 		try{
-			SQLiteDatabase db = SQLiteDatabase.openDatabase("data/data/integra.auditoriapre.movil/databases/QDATA_MOVIL", null, SQLiteDatabase.OPEN_READONLY);
+			db = SQLiteDatabase.openDatabase("data/data/integra.auditoriapre.movil/databases/QDATA_MOVIL", null, SQLiteDatabase.OPEN_READONLY);
 			url = DBManaged.recuperarURL(db, "select URL from url_file where ID = 1");
 			if(!url.equals("")){
 				if(validarUsuario(usuario.getText().toString()) && validarContrasena(contrasena.getText().toString())) {
@@ -118,28 +127,59 @@ public class Login extends Activity{
 						mostrarMensaje("Ocurrio un error al guardar los datos del usuario");
 					}
 				}
-			}else
+			}else{
 				mostrarMensaje("Por favor configure la URL del servico Web");
+			}
+		}catch (SQLiteCantOpenDatabaseException ex) {
+			mostrarMensaje("Por favor configure la URL del servico Web");
 		}catch(SQLiteException ex)
 		{
 			mostrarMensaje("A ocurrido un error al recuperar la URL registrada");
+		}finally{
+			db.close();
 		}
 	
+	}
+	
+	private void leerDatosGuardados(){
+		Usuario usuario = null;
+		SQLiteDatabase db = null;
+		try{
+			db = SQLiteDatabase.openDatabase("data/data/integra.auditoriapre.movil/databases/QDATA_MOVIL", null, SQLiteDatabase.OPEN_READONLY);
+			if(db != null){
+				if(DBManaged.existeTabla(db, "SELECT ID, USER, PASSWORD FROM user_file WHERE ID = 1")){
+					usuario = DBManaged.recuperaruSuarioContrasena(db, "SELECT ID, USER, PASSWORD FROM user_file WHERE ID = 1");
+					if(!(usuario == null)){
+						this.usuario.setText(usuario.getNombre_usuario());
+						this.contrasena.setText(usuario.getContrasena());
+					}					
+				}
+			}
+		}catch(SQLiteException ex){
+			mostrarMensaje("Se presento un error al consultar los datos guardados del usuario");
+		} catch (Exception e) {
+			mostrarMensaje("Se presento un error al consultar los datos guardados del usuario");
+		}finally{
+			db.close();
+		}
 	}
 
 	private void almacenarDatos() throws SQLiteException {
 		Usuario usuario = null;
-		DBManaged db = new DBManaged(getApplicationContext(), DB_NAME, VERSION, TABLA_1);
-		usuario = db.recuperaruSuarioContrasena("SELECT ID, USER, PASSWORD FROM user_file WHERE ID = 1");
-		try
-		{
-		if (!(usuario == null)){
-			db.ejecutarQuery(db.getWritableDatabase(), 
-					"insert into user_file(ID, USER, PASSWORD) values('1','" + this.usuario.toString() + "','" + this.contrasena.toString() + "'");
-		}else{
-			db.ejecutarQuery(db.getWritableDatabase(),
-					"update user_file set USER = '" + this.usuario.toString() + "', PASSWORD = '" + this.contrasena.toString() + "'");
-		}
+		try{
+			SQLiteDatabase db = SQLiteDatabase.openDatabase("data/data/integra.auditoriapre.movil/databases/QDATA_MOVIL", null, SQLiteDatabase.OPEN_READWRITE);
+			if(!DBManaged.existeTabla(db, "SELECT ID, USER, PASSWORD FROM user_file WHERE ID = 1")){
+				DBManaged.crearTabla(db, TABLA_1);
+			}
+			db.close();
+			DBManaged database = new DBManaged(getApplicationContext(), DB_NAME, VERSION, TABLA_1);
+			usuario = database.recuperaruSuarioContrasena("SELECT ID, USER, PASSWORD FROM user_file WHERE ID = 1");
+			if (usuario == null){
+				database.insertarUsuario(new Usuario(1, this.usuario.getText().toString(), this.contrasena.getText().toString()), "user_file");
+			}else{
+				database.modificarUsuario(new Usuario(1, this.usuario.getText().toString(), this.contrasena.getText().toString()), "user_file");
+			}
+			database.close();
 		}catch(SQLiteException ex){
 			mostrarMensaje("Se presento un error en la aplicación");
 		}catch (Exception e) {
@@ -212,6 +252,9 @@ public class Login extends Activity{
 		}
 		catch (XmlPullParserException ex){
 			mostrarMensaje("Error de conversión de datos");
+		}
+		catch (SocketException ex) {
+			mostrarMensaje("No se puede tener acceso a internet");
 		}
 		catch (Exception ex) {
 			mostrarMensaje("Se preseneto un error al realizar la consulta de afiliado");

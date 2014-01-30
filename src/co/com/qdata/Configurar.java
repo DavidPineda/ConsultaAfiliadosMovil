@@ -8,8 +8,6 @@
 
 package co.com.qdata;
 
-import integra.auditoriapre.movil.R;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,6 +15,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteCantOpenDatabaseException;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.view.Menu;
@@ -24,9 +24,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import co.com.qdata.Persistencia.DBManaged;
+
+import com.co.qdata.R;
 
 public class Configurar extends Activity implements OnClickListener{
 
@@ -35,7 +39,7 @@ public class Configurar extends Activity implements OnClickListener{
 	private static final String TABLA = "create table if not exists "
 			 						  + "url_file "
 		 						  	  + "("
-		 						  	  + "ID INT PRIMARY KEY , "
+		 						  	  + "ID INT PRIMARY KEY, "
 		 						  	  + "URL TEXT "
 		 						  	  + ")";
 	private static final String DB_NAME = "QDATA_MOVIL";
@@ -46,9 +50,15 @@ public class Configurar extends Activity implements OnClickListener{
 	 * @date 27/03/2012
 	 * Metodo que activa la ventana de la actividad
 	 * */
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onCreate(android.os.Bundle)
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.configurar);
 		btn_guardar = (Button) findViewById(R.id.btguardar);
 		btn_guardar.setOnClickListener(this);
@@ -77,7 +87,6 @@ public class Configurar extends Activity implements OnClickListener{
 		}
 		else {
 			try {
-				
 				DBManaged database = new DBManaged(getApplicationContext(), DB_NAME, VERSION, TABLA);
 				String url_guardada = database.recuperarURL("select URL from url_file where ID = 1");
 				if(url_guardada == ""){
@@ -97,15 +106,28 @@ public class Configurar extends Activity implements OnClickListener{
 	public void leerDatos() {
 		
 		try{
-			DBManaged database = new DBManaged(getApplicationContext(), DB_NAME, VERSION, TABLA);
-			String url_guardada = database.recuperarURL("select URL from url_file where ID = 1");
-			if(!(url_guardada == "")){
-				url.setText(url_guardada);
+			SQLiteDatabase db = SQLiteDatabase.openDatabase("data/data/integra.auditoriapre.movil/databases/QDATA_MOVIL", null, SQLiteDatabase.OPEN_READONLY);
+			if(db != null){
+				if(DBManaged.existeTabla(db, "select URL from url_file where ID = 1")){
+					String url_guardada = DBManaged.recuperarURL(db, "select URL from url_file where ID = 1");
+					if(!(url_guardada == "")){
+						url.setText(url_guardada);
+					}else{
+						mostrarMensaje("No se ha ingresado ninguna URL");
+					}
+				}else{
+					mostrarMensaje("No se ha ingresado ninguna URL");
+				}
 			}else{
-				mostrarMensaje("No se ha ingresado ninguna URL");
-			} 
+				mostrarMensaje("No se ha ingresado ninguna URL");				
+			}
+		}catch (SQLiteCantOpenDatabaseException ex) {
+				mostrarMensaje("No se ha ingresado ninguna URL");	
 		}catch (SQLiteException ex) {
 				mostrarMensaje("Se hapresentado un error, Favor intente mas tarde");
+		}
+		catch (Exception e) {
+			mostrarMensaje("Se hapresentado un error, Favor intente mas tarde");
 		}
 	}
 

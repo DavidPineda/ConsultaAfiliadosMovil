@@ -67,6 +67,41 @@ public class DBManaged extends SQLiteOpenHelper {
         }
     }
     
+    @SuppressLint("NewApi")
+    public void insertarUsuario(Usuario usuario, String tabla) throws SQLiteException{
+    	SQLiteDatabase db = getWritableDatabase();
+    	if(!(db == null)){
+    		ContentValues valores = new ContentValues();
+    		valores.put("ID", usuario.getId());
+    		valores.put("USER", usuario.getNombre_usuario());
+    		valores.put("PASSWORD", usuario.getContrasena());
+    		db.insert(tabla, null, valores);
+    		db.close();
+    	}
+    }
+    
+    @SuppressLint("NewApi")
+    public void modificarUsuario(Usuario usuario, String tabla) throws SQLiteException{
+        SQLiteDatabase db = getWritableDatabase();
+        if(!(db == null)){
+            ContentValues valores = new ContentValues();
+    		valores.put("ID", usuario.getId());
+    		valores.put("USER", usuario.getNombre_usuario());
+    		valores.put("PASSWORD", usuario.getContrasena());
+            db.update(tabla, valores, "ID=" + usuario.getId(), null);
+            db.close();   
+        }
+    }
+    
+    @SuppressLint("NewApi")
+    public void borrarUsuario(int id, String tabla) throws SQLiteException {
+        SQLiteDatabase db = getWritableDatabase();
+        if(!(db == null)){
+            db.delete(tabla, "ID="+id, null);
+            db.close();          	
+        }
+    }
+    
     public String recuperarURL(String sentencia) throws SQLiteException{
     	SQLiteDatabase db = getReadableDatabase();
     	String url = "";
@@ -106,6 +141,30 @@ public class DBManaged extends SQLiteOpenHelper {
     	return user;
     }
     
+    public static Usuario recuperaruSuarioContrasena(SQLiteDatabase db, String sentencia) throws SQLiteException, Exception{
+    	if(db == null){
+    		throw new Exception("Argumento db es nulo");
+    	}
+    	String usuario = "", contrasena = "";
+    	int id;
+    	Usuario user = null;
+    	if(!(db == null)){
+    		Cursor c = db.rawQuery(sentencia, null);
+    		if(!(c == null)){
+    			c.moveToFirst();
+    		}
+    		if(c.getCount() > 0){
+    			id = Integer.parseInt(c.getString(0));
+    			usuario = c.getString(1);
+    			contrasena = c.getString(2);
+    			user = new Usuario(id, usuario, contrasena);
+    		}
+    		db.close();
+    		c.close();
+    	}
+    	return user;
+    } 
+    
     public static String recuperarURL(SQLiteDatabase db, String sentencia) throws SQLiteException{
     	String url = "";
     	if(!(db == null)){
@@ -132,5 +191,39 @@ public class DBManaged extends SQLiteOpenHelper {
     		throw new SQLiteException("Se presento un error al ejecutar el query");
     	}
     }
+    
+    public static void createDataTable(SQLiteDatabase db, String sentencia) throws Exception, SQLiteException{
+    	if(db == null){
+    		throw new Exception("Argumento db es nulo");
+    	}
+    	try{
+    	db.execSQL(sentencia, null);
+    	}catch(SQLiteException ex){
+    		throw new SQLiteException("Se presento un error al ejecutar el query");
+    	}
+    }
+    
+    public static boolean existeTabla(SQLiteDatabase db, String sentencia) throws Exception{
+    	if(db == null){
+    		throw new Exception("Argumento db es nulo");
+    	}
+    	try{
+    		db.rawQuery(sentencia, null);
+    	}catch(SQLiteException ex){
+    		return false;
+    	}
+    	
+    	return true;
+	}
    
+    public static void crearTabla(SQLiteDatabase db, String tabla) throws SQLiteException, Exception{
+		if(db == null){
+			throw new Exception("Argumento db es nulo");
+		}
+		try{
+			db.execSQL(tabla);
+		}catch(SQLiteException ex){
+			throw ex;
+		}
+	}
 }

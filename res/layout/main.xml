@@ -21,15 +21,6 @@
       android:layout_width="fill_parent"
       android:layout_height="262dp" >
 
-      <Button
-          android:id="@+id/btconectar"
-          android:layout_width="85dp"
-          android:layout_height="80dp"
-          android:layout_alignParentBottom="true"
-          android:background="@drawable/qd_boton"
-          android:onClick="validar_Login"
-          android:width="80sp" android:layout_marginBottom="39dp"/>
-
       <TextView
           android:id="@+id/user"
           style="@style/SubTitulos"
@@ -39,19 +30,6 @@
           android:layout_marginLeft="14dp"
           android:layout_marginTop="30dp"
           android:text="Usuario:" />
-
-      <EditText
-          android:id="@+id/usuario"
-          android:layout_width="120dp"
-          android:layout_height="wrap_content"
-          android:layout_alignBaseline="@+id/user"
-          android:layout_alignBottom="@+id/user"
-          android:layout_marginLeft="45dp"
-          android:layout_toRightOf="@+id/btconectar"
-          android:layout_weight="1"
-          android:cursorVisible="true"
-          android:gravity="right"
-          android:inputType="text" />
 
       <EditText
           android:id="@+id/contrasena"
@@ -83,11 +61,32 @@
           style="@style/SubTitulos"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_alignBaseline="@+id/btconectar"
-          android:layout_alignBottom="@+id/btconectar"
-          android:layout_toRightOf="@+id/password"
-          android:text="@string/almacenarlp"
-          android:textSize="12px"/>
+          android:layout_alignLeft="@+id/contrasena"
+          android:layout_below="@+id/contrasena"
+          android:text="@string/almacenarlp" />
+
+      <EditText
+          android:id="@+id/usuario"
+          android:layout_width="120dp"
+          android:layout_height="wrap_content"
+          android:layout_alignBaseline="@+id/user"
+          android:layout_alignBottom="@+id/user"
+          android:layout_alignRight="@+id/btconectar"
+          android:layout_weight="1"
+          android:cursorVisible="true"
+          android:ems="10"
+          android:gravity="right"
+          android:inputType="text" />
+
+      <Button
+          android:id="@+id/btconectar"
+          android:layout_width="85dp"
+          android:layout_height="80dp"
+          android:layout_alignParentBottom="true"
+          android:layout_alignParentRight="true"
+          android:layout_marginRight="21dp"
+          android:background="@drawable/qd_boton"
+          android:width="80sp" />
 
   </RelativeLayout>
 

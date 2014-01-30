@@ -5,7 +5,7 @@
  * should not be modified by hand.
  */
 
-package integra.auditoriapre.movil;
+package com.co.qdata;
 
 public final class R {
     public static final class attr {
@@ -23,31 +23,30 @@ public final class R {
         public static final int qd_salir=0x7f020009;
     }
     public static final class id {
-        public static final int RecoardarLogin=0x7f070014;
-        public static final int btcodigo=0x7f07000a;
-        public static final int btconectar=0x7f07000f;
-        public static final int btdocumento=0x7f07000d;
+        public static final int RecoardarLogin=0x7f070012;
+        public static final int btconectar=0x7f070013;
         public static final int btguardar=0x7f070005;
+        public static final int btn_consultar=0x7f07000c;
         public static final int code=0x7f070008;
-        public static final int configurar=0x7f070017;
-        public static final int contrasena=0x7f070012;
-        public static final int contrato_afil=0x7f070009;
-        public static final int document=0x7f07000b;
-        public static final int item1=0x7f070015;
+        public static final int configurar=0x7f070016;
+        public static final int contrasena=0x7f07000f;
+        public static final int contrato_afil=0x7f07000a;
+        public static final int document=0x7f070009;
+        public static final int item1=0x7f070014;
         public static final int linearLayout1=0x7f070000;
-        public static final int login=0x7f070016;
-        public static final int numero_doc=0x7f07000c;
-        public static final int password=0x7f070013;
+        public static final int login=0x7f070015;
+        public static final int numero_doc=0x7f07000b;
+        public static final int password=0x7f070011;
         public static final int relativeLayout1=0x7f070007;
         public static final int relativeLayout2=0x7f070002;
-        public static final int salir=0x7f070018;
-        public static final int titulo=0x7f07000e;
+        public static final int salir=0x7f070017;
+        public static final int titulo=0x7f07000d;
         public static final int tituloConf=0x7f070001;
         public static final int titulocon=0x7f070006;
-        public static final int url=0x7f070004;
-        public static final int urlusuer=0x7f070003;
-        public static final int user=0x7f070010;
-        public static final int usuario=0x7f070011;
+        public static final int url=0x7f070003;
+        public static final int urlusuer=0x7f070004;
+        public static final int user=0x7f07000e;
+        public static final int usuario=0x7f070010;
     }
     public static final class layout {
         public static final int configurar=0x7f030000;
@@ -64,6 +63,7 @@ public final class R {
         public static final int app_name=0x7f050001;
         public static final int cod_interno=0x7f05000a;
         public static final int configurar=0x7f050007;
+        public static final int consulta=0x7f05000c;
         public static final int doc_afiliado=0x7f05000b;
         public static final int hello=0x7f050000;
         public static final int inicio=0x7f050005;
