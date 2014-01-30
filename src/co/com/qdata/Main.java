@@ -9,7 +9,7 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.co.qdata.R;
+import com.co.qdata.consultaOnline.R;
 
 public class Main extends Activity {
     /** Called when the activity is first created. */

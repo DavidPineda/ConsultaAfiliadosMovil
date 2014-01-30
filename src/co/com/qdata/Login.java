@@ -36,7 +36,7 @@ import co.com.qdata.Persistencia.DBManaged;
 import co.com.qdata.llamaServicio.LlamaServicio;
 import co.com.qdata.usuario.Usuario;
 
-import com.co.qdata.R;
+import com.co.qdata.consultaOnline.R;
 
 public class Login extends Activity{
 	
@@ -114,7 +114,7 @@ public class Login extends Activity{
 		String url = "";
 		SQLiteDatabase db = null;
 		try{
-			db = SQLiteDatabase.openDatabase("data/data/integra.auditoriapre.movil/databases/QDATA_MOVIL", null, SQLiteDatabase.OPEN_READONLY);
+			db = SQLiteDatabase.openDatabase("data/data/com.co.qdata.consultaOnline/databases/QDATA_MOVIL", null, SQLiteDatabase.OPEN_READONLY);
 			url = DBManaged.recuperarURL(db, "select URL from url_file where ID = 1");
 			if(!url.equals("")){
 				if(validarUsuario(usuario.getText().toString()) && validarContrasena(contrasena.getText().toString())) {
@@ -145,7 +145,7 @@ public class Login extends Activity{
 		Usuario usuario = null;
 		SQLiteDatabase db = null;
 		try{
-			db = SQLiteDatabase.openDatabase("data/data/integra.auditoriapre.movil/databases/QDATA_MOVIL", null, SQLiteDatabase.OPEN_READONLY);
+			db = SQLiteDatabase.openDatabase("data/data/com.co.qdata.consultaOnline/databases/QDATA_MOVIL", null, SQLiteDatabase.OPEN_READONLY);
 			if(db != null){
 				if(DBManaged.existeTabla(db, "SELECT ID, USER, PASSWORD FROM user_file WHERE ID = 1")){
 					usuario = DBManaged.recuperaruSuarioContrasena(db, "SELECT ID, USER, PASSWORD FROM user_file WHERE ID = 1");
@@ -167,7 +167,7 @@ public class Login extends Activity{
 	private void almacenarDatos() throws SQLiteException {
 		Usuario usuario = null;
 		try{
-			SQLiteDatabase db = SQLiteDatabase.openDatabase("data/data/integra.auditoriapre.movil/databases/QDATA_MOVIL", null, SQLiteDatabase.OPEN_READWRITE);
+			SQLiteDatabase db = SQLiteDatabase.openDatabase("data/data/com.co.qdata.consultaOnline/databases/QDATA_MOVIL", null, SQLiteDatabase.OPEN_READWRITE);
 			if(!DBManaged.existeTabla(db, "SELECT ID, USER, PASSWORD FROM user_file WHERE ID = 1")){
 				DBManaged.crearTabla(db, TABLA_1);
 			}
@@ -266,34 +266,27 @@ public class Login extends Activity{
 		switch(valor){
 		case 0:
 			mostrarMensaje("Usuario y password incorrectos");
-			cancelar();
 			break;
 		case 1:
 			aceptar();
 			break;
 		case 2:
 			mostrarMensaje("Password de usuario incorrecto");
-			cancelar();
 			break;
 		case 3:
 			mostrarMensaje("Nombre de usuario incorrecto");
-			cancelar();
 			break;
 		case 7:
 			mostrarMensaje("Se produjo un error, Favor intente más tarde");
-			cancelar();
 			break;
 		case 8:
 			mostrarMensaje("Se produjo un error, Favor intente más tarde");
-			cancelar();
 			break;
 		case 9: 
-			mostrarMensaje("Se produjo un error, Favor intente más tarde");
-			cancelar();				
+			mostrarMensaje("Se produjo un error, Favor intente más tarde");		
 			break;
 			default:
 				mostrarMensaje("Se produjo un error, Favor intente más tarde");
-				cancelar();		
 				break;
 		}
 	}

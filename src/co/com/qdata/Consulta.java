@@ -17,14 +17,11 @@ import org.ksoap2.serialization.SoapPrimitive;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -38,7 +35,7 @@ import co.com.qdata.Persistencia.DBManaged;
 import co.com.qdata.llamaServicio.LlamaServicio;
 import co.com.qdata.usuario.UsuarioConsultado;
 
-import com.co.qdata.R;
+import com.co.qdata.consultaOnline.R;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 
@@ -107,10 +104,10 @@ public class Consulta extends Activity implements OnClickListener{
 		PropertyInfo[] propiedades = new PropertyInfo[1];
 		PropertyInfo propiedad = new PropertyInfo();
 		//Se inicia la barra de progreso
-		barraProgreso();
+		//barraProgreso();
 		
 		try{
-			SQLiteDatabase db = SQLiteDatabase.openDatabase("data/data/integra.auditoriapre.movil/databases/QDATA_MOVIL", null, SQLiteDatabase.OPEN_READONLY);
+			SQLiteDatabase db = SQLiteDatabase.openDatabase("data/data/com.co.qdata.consultaOnline/databases/QDATA_MOVIL", null, SQLiteDatabase.OPEN_READONLY);
 			if(db != null){
 				url = DBManaged.recuperarURL(db, "select URL from url_file where ID = 1");
 				if(!url.equals("")){
@@ -206,10 +203,9 @@ public class Consulta extends Activity implements OnClickListener{
 	 * @author Irma Fernanda Alayon
 	 * @date 27/01/2012
 	 */
-	public void barraProgreso(){
-		/**
-		 * se ingresa el mensaje que va aparecer en la barra.
-		 */
+/*	
+ 	public void barraProgreso(){
+
 		final ProgressDialog dialog = ProgressDialog.show(this, "Buscando", "Sus Datos", true);
 		final Handler handler = new Handler() {
 			public void handleMessage(Message msg) {
@@ -229,6 +225,7 @@ public class Consulta extends Activity implements OnClickListener{
 		};
 		checkUpdate.start();
 	}
+*/
 	
 	 @Override
 	   public boolean onOptionsItemSelected(MenuItem item) {

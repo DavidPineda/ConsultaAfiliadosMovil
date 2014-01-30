@@ -30,7 +30,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import co.com.qdata.Persistencia.DBManaged;
 
-import com.co.qdata.R;
+import com.co.qdata.consultaOnline.R;
 
 public class Configurar extends Activity implements OnClickListener{
 
@@ -106,7 +106,7 @@ public class Configurar extends Activity implements OnClickListener{
 	public void leerDatos() {
 		
 		try{
-			SQLiteDatabase db = SQLiteDatabase.openDatabase("data/data/integra.auditoriapre.movil/databases/QDATA_MOVIL", null, SQLiteDatabase.OPEN_READONLY);
+			SQLiteDatabase db = SQLiteDatabase.openDatabase("data/data/com.co.qdata.consultaOnline/databases/QDATA_MOVIL", null, SQLiteDatabase.OPEN_READONLY);
 			if(db != null){
 				if(DBManaged.existeTabla(db, "select URL from url_file where ID = 1")){
 					String url_guardada = DBManaged.recuperarURL(db, "select URL from url_file where ID = 1");
